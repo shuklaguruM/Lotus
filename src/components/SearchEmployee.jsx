@@ -50,10 +50,10 @@ const SearchEmployee = () => {
   };
   console.log("results actual used: ", results);
   return (
-    <div className=" bg-[pink]   h-[100vh] w-full flex justify-center  bg-circule    ">
+    <div className=" bg-[pink] dark:bg-[#212425]   h-[76.5vh] w-full flex justify-center  bg-circule    ">
       <main className="  w-10/12 sm:w-9/12 lg:w-10/12 bg-glassmorphism text-white rounded-lg   p-1  ">
         {/* search */}
-        <form className=" flex items-center s-bg-white p-1 rounded-tl-md rounded-tr-md border-b-slate-500 border-b-2  ">
+        <form className=" flex items-center s-bg-white p-1 rounded-tl-md rounded-tr-md border-b-slate-500 border-b-2  text-black dark:text-[#A6A6A6] ">
           <CiSearch className=" ml-2 text-2xl " />
           <input
             className=" pl-4 pr-2 py-2 w-full outline-none  s-bg-white bg-transparent "
@@ -62,7 +62,7 @@ const SearchEmployee = () => {
           />
         </form>
         {/* heading */}
-        <div className=" overflow-scroll flex w-full s-bg-white  ">
+        <div className=" overflow-scroll flex w-full s-bg-white  dark:text-[A6A6A6] ">
           <Category
             name="Name"
             count={5}

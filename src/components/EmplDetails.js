@@ -2,8 +2,9 @@ import { upload } from "@testing-library/user-event/dist/upload";
 import { Download } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
-const EmplDetails = ({ data }) => {
+const EmplDetails = ({ user, setuser, data }) => {
   const cloudinary_url =
     "https://res.cloudinary.com/djt3bitue/image/upload/v1710347863/t4tgknvj3tbuslhmuxff.png";
   console.log("Logged inside empl details id is ", data);
@@ -13,9 +14,12 @@ const EmplDetails = ({ data }) => {
   const [office_photo_url, setOfficePhotoUrl] = useState(
     data.data.officePhotoLink
   );
+
   const [personal_photo_url, setPersonalPhotoUrl] = useState(
     data.data.personalPhotoLink
   );
+  const [username, setUsername] = useState("");
+  const [currentUser, setCurrentUser] = useState(data.data.username);
   const [id, setId] = useState(data.data.empId);
   const [email, setEmail] = useState(data.data.email);
   const [phone, setPhone] = useState(data.data.phoneNumber);
@@ -24,6 +28,7 @@ const EmplDetails = ({ data }) => {
   );
   const [img, setImg] = useState(data.data.officePhotoLink);
   const [isAlternate, setIsAlternate] = useState(false);
+  const [tagElements, setTagElements] = useState([]);
   const handleImageClick = () => {
     setIsAlternate(!isAlternate);
   };
@@ -32,6 +37,7 @@ const EmplDetails = ({ data }) => {
     const anchor = document.createElement("a");
     anchor.href = cloudinary_url;
     anchor.setAttribute("download", "offer_letter");
+    anchor.target = "_blank";
     anchor.click();
   };
 
@@ -60,11 +66,37 @@ const EmplDetails = ({ data }) => {
     }
   };
 
+  // const tagElement = [];
+  // for (let i = 0; i < data.data.tags.length; i++) {
+  //   tagElement.push(
+  //     <div key={i} className="tag">
+  //       {data.data.tags[i]}
+  //     </div>
+  //   );
+  // }
+  // console.log("Tag element here", tagElement);
+
+  useEffect(() => {
+    setCurrentUser(data.data.username);
+    setDob(data.data.dob);
+    setOfficePhotoUrl(data.data.officePhotoLink);
+    setPersonalPhotoUrl(data.data.personalPhotoLink);
+    setName(data.data.name);
+    setDesignation(data.data.designation);
+    setId(data.data.empId);
+    setEmail(data.data.email);
+    setPhone(data.data.phoneNumber);
+    setTagElements(data.data.tags);
+    const manager =
+      data.data.managerDto === null ? 1 : data.data.managerDto.managerName;
+    setManager(manager);
+    setUsername(sessionStorage.getItem("user"));
+  }, [user, data]);
   return (
     <>
       <div className="">
         <div className=" bg-indigo-500 rounded-3xl  ">
-          <div className=" absolute left-[11.5rem] top-[3rem] w-45 h-45 rounded-2xl mx-auto z-[99999] bg-[pink] )] bg-cover w-48 h-48">
+          <div className=" absolute left-[11.5rem] top-[3rem] w-45 h-45 rounded-2xl mx-auto z-[99999] bg-gradient-to-r from-[#FA5252] to-[#DD2476] bg-cover w-48 h-48">
             <img
               src={isAlternate ? office_photo_url : personal_photo_url}
               onClick={handleImageClick}
@@ -82,14 +114,22 @@ const EmplDetails = ({ data }) => {
           </div>
 
           <div className="flex justify-center mt-5">
-            <a href="/" className="text-blue-500 hover:text-blue-700 mx-3">
+            <a
+              href="https://www.facebook.com/login/"
+              target="_blank"
+              className="text-blue-500 hover:text-blue-700 mx-3"
+            >
               <span class="[&>svg]:h-7 [&>svg]:w-7 [&>svg]:fill-[#1877F2]">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
                   <path d="M80 299.3V512H196V299.3h86.5l18-97.8H196V166.9c0-51.7 20.3-71.5 72.7-71.5c16.3 0 29.4 .4 37 1.2V7.9C291.4 4 256.4 0 236.2 0C129.3 0 80 50.5 80 159.4v42.1H14v97.8H80z" />
                 </svg>
               </span>
             </a>
-            <a href="/" className="text-blue-500 hover:text-blue-700 mx-3">
+            <a
+              href="https://www.linkedin.com/login"
+              target="_blank"
+              className="text-blue-500 hover:text-blue-700 mx-3"
+            >
               <span class="[&>svg]:h-7 [&>svg]:w-7 [&>svg]:fill-[#0077B5]">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                   <path d="M100.3 448H7.4V148.9h92.9zM53.8 108.1C24.1 108.1 0 83.5 0 53.8a53.8 53.8 0 0 1 107.6 0c0 29.7-24.1 54.3-53.8 54.3zM447.9 448h-92.7V302.4c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7V448h-92.8V148.9h89.1v40.8h1.3c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3V448z" />
@@ -172,7 +212,7 @@ const EmplDetails = ({ data }) => {
                 <div className="dark:text-white break-all">
                   <a
                     className="hover:text-[#FA5252] duration-300 transition"
-                    href="mailto:ibthemes21@gmail.com"
+                    href={`mailto:${email}`}
                   >
                     {email}
                   </a>
@@ -243,35 +283,6 @@ const EmplDetails = ({ data }) => {
                 </div>
               </div>
             </div>
-            <div className="flex py-2.5 border-b border-[#E3E3E3] dark:border-[#3D3A3A] ">
-              <span className="p-2 rounded-md bg-white text-[#FD7590] shadow-md hover:bg-[#E93B81] hover:text-white dark:bg-black dark:hover:bg-[#E93B81]">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-users-round"
-                >
-                  <path d="M18 21a8 8 0 0 0-16 0" />
-                  <circle cx="10" cy="8" r="5" />
-                  <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" />
-                </svg>
-              </span>
-              <div className="text-left ml-2.5">
-                <div className="text-xs text-[#44566C] dark:text-[#A6A6A6]  ">
-                  Communities
-                </div>
-                <div className="dark:text-white break-all">
-                  <div className="">abc</div>
-                </div>
-              </div>
-            </div>
-
             <div className="flex py-2.5 undefined ">
               <span className="p-2 rounded-md bg-white text-[#c0ef74] shadow-md hover:bg-[#E93B81] hover:text-white dark:bg-black dark:hover:bg-[#E93B81]">
                 <svg
@@ -296,44 +307,59 @@ const EmplDetails = ({ data }) => {
                   Tags
                 </div>
                 <div className="dark:text-white break-all">
-                  <div className="">xyz</div>
+                  <div className="tags-input">
+                    <ul id="tags">
+                      {tagElements.map((tagElements, index) => (
+                        <li key={index} className="tag">
+                          <span className="tag-title">
+                            {tagElements.tagName}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           <div className="flex items-center justify-center mx-auto">
-            <a
-              onClick={handleDownload}
-              href={cloudinary_url}
-              download="Offer_letter.png"
-              className="inline-flex items-center mx-auto bg-gradient-to-r from-[#fa5252] to-[#dd2476] duration-200 transition ease-linear hover:bg-gradient-to-l from-[#DD2476] to-[#fa5252ef] px-8 py-3 text-lg text-white rounded-[35px] mt-6"
-            >
-              <Download className="mr-2" />
-              Download Offer Letter
-            </a>
+            {console.log(user)}
+            {console.log(username)}
+            {currentUser === username && (
+              <a
+                onClick={handleDownload}
+                download="Offer_letter.png"
+                className="inline-flex items-center mx-auto bg-gradient-to-r from-[#fa5252] to-[#dd2476] duration-200 transition ease-linear hover:bg-gradient-to-l from-[#DD2476] to-[#fa5252ef] px-8 py-3 text-lg text-white rounded-[35px] mt-6"
+              >
+                <Download className="mr-2" />
+                Download Offer Letter
+              </a>
+            )}
           </div>
           <div className="flex items-center justify-center mx-auto">
-            <label
-              className="cursor-pointer inline-flex items-center mx-auto bg-gradient-to-r from-[#fa5252] to-[#dd2476] duration-200 transition ease-linear hover:bg-gradient-to-l from-[#DD2476] to-[#fa5252ef] px-8 py-3 text-lg text-white rounded-[35px] mt-6"
-              htmlFor="profile-pic-img"
-            >
-              <svg
-                className="w-8 h-8 pr-1 pt-1"
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
+            {currentUser === username && (
+              <label
+                className="cursor-pointer inline-flex items-center mx-auto bg-gradient-to-r from-[#fa5252] to-[#dd2476] duration-200 transition ease-linear hover:bg-gradient-to-l from-[#DD2476] to-[#fa5252ef] px-8 py-3 text-lg text-white rounded-[35px] mt-6"
+                htmlFor="profile-pic-img"
               >
-                <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-              </svg>
-              <input
-                type="file"
-                className="hidden"
-                id="profile-pic-img"
-                accept="image/png, image/jpeg, image/jpg"
-                onChange={uploadImage}
-              />
-              <span className="mr-2">Upload Your Image</span>
-            </label>
+                <svg
+                  className="w-8 h-8 pr-1 pt-1"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                </svg>
+                <input
+                  type="file"
+                  className="hidden"
+                  id="profile-pic-img"
+                  accept="image/png, image/jpeg, image/jpg"
+                  onChange={uploadImage}
+                />
+                <span className="mr-2">Upload Your Image</span>
+              </label>
+            )}
           </div>
         </div>
       </div>

@@ -11,7 +11,7 @@ const containerStyles = {
   width: "100%",
   height: "100vh",
   marginBottom: "20px",
-  background: "white",
+  //background: "white",
   borderRadius: "30px",
   cursor: "pointer",
   overflow: "scroll",
@@ -24,7 +24,7 @@ const buttonStyle = {
   width: "250px",
   height: "210px",
   paddingTop: "16px",
-  background: "pink",
+  background: "rgb(250,82,82)",
   borderRadius: "50px",
   color: "black",
   display: "flex",
@@ -113,10 +113,7 @@ const renderForeignObjectNode = ({
               </div>
               <div
                 className="flex justify-between absolute bottom-6 right-6 "
-                onClick={(event) =>
-                  nodeDatum.attributes.children !== undefined &&
-                  handleDownload(nodeDatum)
-                }
+                onClick={(event) => handleDownload(nodeDatum)}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -176,7 +173,8 @@ const renderForeignObjectNode = ({
   </>
 );
 
-const UserTree = ({ id, managerid }) => {
+const UserTree = ({ user, setUser, id, managerid }) => {
+  console.log("Inside the Org tree", user);
   const navigate = useNavigate();
   const [myTreeData, setMyTreeData] = useState(null);
   const [toggleUpBottun, settoggleUpBottun] = useState(true);
@@ -192,15 +190,19 @@ const UserTree = ({ id, managerid }) => {
 
   const handleNodeClick = async (nodeDatum) => {
     navigate(`/user/${nodeDatum.attributes.username}`);
-    window.location.reload();
+    console.log("Inside the handle node click", nodeDatum.attributes.username);
   };
 
   const handleDownload = async (nodeDatum) => {
     console.log("Nodedatum while csv download", nodeDatum);
-    const { data } = await axios.get(
-      `http://localhost:8080/byManager/${nodeDatum.attributes.id}`
-    );
-    downloadCSV(data, nodeDatum.attributes.username);
+    try {
+      const { data } = await axios.get(
+        `http://localhost:8080/byManager/${nodeDatum.attributes.id}`
+      );
+      downloadCSV(data, nodeDatum.attributes.username);
+    } catch (e) {
+      alert("no reportee");
+    }
   };
 
   function convertArrayOfObjectsToCSV(data) {
@@ -427,6 +429,7 @@ const UserTree = ({ id, managerid }) => {
             translate={translate}
             dimensions={dimensions}
             nodeSize={nodeSize}
+            // pathClassFunc={pathClassFunc || defaultPathClassFunc}
             centeringTransitionDuration={200}
             allowForeignObjects
             renderCustomNodeElement={(rd3tProps) =>

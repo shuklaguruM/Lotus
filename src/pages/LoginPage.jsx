@@ -7,7 +7,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function Login({ theme, setTheme, user, setUser }) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   function togglePasswordVisibility() {
     setIsPasswordVisible((prevState) => !prevState);
@@ -27,12 +27,16 @@ export default function Login() {
       console.log("Response: ", response); // Assuming the response contains token or user data
       // Handle successful login, such as storing token in local storage or context
       if (response.status === 200) {
-        navigate(`/user/${username}`);
+        setUser(username);
+        sessionStorage.setItem("user", username);
       }
     } catch (error) {
       setError("Invalid username or password");
       console.error("Login error:", error);
+      alert("Incorrect username or password");
+      navigate("/login");
     }
+    navigate(`/user/${username}`);
   };
   return (
     <section className="h-screen flex flex-col md:flex-row justify-center space-y-10 md:space-y-0 md:space-x-16 items-center my-2 mx-5 md:mx-0 md:my-0 bg-image  ">
@@ -72,7 +76,7 @@ export default function Login() {
           }}
         >
           <div>
-            <label htmlFor="username">Username:</label>
+            {/* <label htmlFor="username">Username:</label> */}
             <input
               className="text-sm w-full px-4 py-2 border border-solid border-gray-300 rounded mb-2 mt-2"
               type="text"
